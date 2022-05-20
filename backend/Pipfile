@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+fastapi = "==0.78.0"
+uvicorn = "==0.17.6"
+motor = "==3.0.0"
+transformers = "==4.19.2"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
