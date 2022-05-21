@@ -11,3 +11,6 @@ transformers == 4.19.2
 
 # install packages
 # pipenv install -r requirements.txt
+
+# run uvicorn server
+# pipenv run uvicorn main:app --reload

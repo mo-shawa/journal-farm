@@ -1,7 +1,9 @@
 from model import JournalEntry
 import motor.motor_asyncio
+import os
 
-client = motor.motor_asyncio.AsyncIOMotorClient('mongodb://127.0.0.1:27017/')
+client = motor.motor_asyncio.AsyncIOMotorClient(
+    os.environ.get('MONGO_URL', 'none'))
 
 database = client.JournalAI
 
