@@ -1,23 +1,37 @@
-import logo from './logo.svg';
+import { useState } from 'react';
 import './App.css';
 
 function App() {
+
+  const [form, setForm] = useState({
+    title: '',
+    body: '',
+  });
+
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    console.log("submit");
+    let response = await fetch(`/sentiment/${form.body}`, { method: 'POST' });
+    const data = await response.json();
+    console.log(data)
+  }
+  // TODO: Add a submit handler to the form
+  // Post form data to the server, responding with the details of the new post + the sentiment score
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <h2>Neat Journal app</h2>
+      <form onSubmit={handleSubmit}>
+        <input onChange={handleChange} value={form.title} type='text' name='title' />
+        <textarea onChange={handleChange} value={form.body} name='body'></textarea>
+        <input type='submit' />
+      </form>
     </div>
   );
 }
