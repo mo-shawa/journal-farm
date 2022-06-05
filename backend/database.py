@@ -10,8 +10,8 @@ database = client.JournalAI
 collection = database.entries
 
 
-async def fetch_entry(title):
-    doc = await collection.find_one({'title': title}, {'_id': False})
+async def fetch_entry(id):
+    doc = await collection.find_one({'id': id}, {'_id': False})
     return doc
 
 
@@ -22,6 +22,7 @@ async def fetch_all_entries():
     cursor = collection.find({})
     async for doc in cursor:
         entries.append(JournalEntry(**doc))
+    return entries
 
     # 2. find.to_list()
     # return await collection.find().to_list(None)
@@ -29,5 +30,5 @@ async def fetch_all_entries():
 
 async def create_entry(entry):
     document = entry
-    await collection.insert_one(document)
-    return document
+    result = await collection.insert_one(document)
+    return result

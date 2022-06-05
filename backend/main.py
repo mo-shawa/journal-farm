@@ -1,13 +1,13 @@
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
 from model import JournalEntry
 from database import (
     fetch_all_entries,
     fetch_entry,
     create_entry,
 )
-from fastapi import FastAPI, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 from transformers import pipeline
-import uvicorn
 
 nlp = pipeline(task='sentiment-analysis',
                model='nlptown/bert-base-multilingual-uncased-sentiment')
@@ -26,10 +26,14 @@ app.add_middleware(
 )
 
 
-# @app.get('/')
-# def index():
-#     response = await fetch_all_entries()
-#     return {"Hello": "World"}
+@app.get('/')
+def index():
+    return {"Hello": "World"}
+
+
+@app.get('/entries')
+async def get_entries():
+    return await fetch_all_entries()
 
 
 @app.get('/entry/{title}')
@@ -42,15 +46,18 @@ async def get_entry(title):
 
 @app.post('/entry', response_model=JournalEntry)
 async def post_entry(entry: JournalEntry):
+    result = analyze_sentiment(entry.body)
+    # print(entry)
+    # entry = entry.dict()
+    entry.sentiment = result["sentiment"]
+    entry.probability = result["probability"]
+    print(entry)
+    print(entry.dict())
     response = await create_entry(entry.dict())
+    print("RESPONSE!", response)
     if response:
-        return response
+        return {"data": response}
     raise HTTPException(400, "Entry not created")
-
-
-@app.post('/sentiment/{text}')
-async def get_sentiment(text: str):
-    return analyze_sentiment(text)
 
 
 def analyze_sentiment(text):
@@ -74,8 +81,14 @@ def analyze_sentiment(text):
 
     # Format and return results
     return {'sentiment': sent, 'probability': prob}
-# @app.get('/api/journal/{id}')
-# async def get_journal()
+
+
+# TEST - works
+# TODO: receieve text from frontend, analyze sentiment, save to database and return results
+# TODO: Authentication JWT, post to specific user
+@app.post('/sentiment/{text}')
+async def get_sentiment(text: str):
+    return analyze_sentiment(text)
 
 
 if __name__ == '__main__':
